@@ -1,91 +1,114 @@
-// --- CONFIG & FIREWORK ---
-const canvas = document.getElementById('firework-canvas');
-const ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+// --- TWINKLE & FIREWORK ---
+const sC = document.getElementById('star-canvas');
+const fC = document.getElementById('firework-canvas');
+const sX = sC.getContext('2d');
+const fX = fC.getContext('2d');
 
-let particles = [];
-let rocket = { x: canvas.width/2, y: canvas.height, targetY: canvas.height/2.5, speed: 7, active: true };
+sC.width = fC.width = window.innerWidth;
+sC.height = fC.height = window.innerHeight;
 
-function animate() {
-    ctx.fillStyle = 'rgba(10, 10, 26, 0.2)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+let stars = [];
+for(let i=0; i<150; i++) stars.push({ x: Math.random()*sC.width, y: Math.random()*sC.height, r: Math.random()*1.5, a: Math.random() });
 
-    if (rocket.active) {
-        ctx.fillStyle = "#FFD700";
-        ctx.beginPath(); ctx.arc(rocket.x, rocket.y, 4, 0, Math.PI*2); ctx.fill();
-        rocket.y -= rocket.speed;
-        if (rocket.y <= rocket.targetY) {
+function drawS() {
+    sX.clearRect(0,0,sC.width,sC.height);
+    stars.forEach(s => {
+        sX.fillStyle = `rgba(255,255,255,${s.a})`;
+        sX.beginPath(); sX.arc(s.x, s.y, s.r, 0, Math.PI*2); sX.fill();
+        s.a += (Math.random()-0.5)*0.05;
+        if(s.a<0) s.a=0; if(s.a>1) s.a=1;
+    });
+    requestAnimationFrame(drawS);
+}
+drawS();
+
+let rocket = { x: fC.width/2, y: fC.height, tY: fC.height/2.5, active: true };
+let parts = [];
+
+function animateF() {
+    fX.clearRect(0,0,fC.width,fC.height);
+    if(rocket.active) {
+        fX.fillStyle = "#f4c430";
+        fX.beginPath(); fX.arc(rocket.x, rocket.y, 3, 0, Math.PI*2); fX.fill();
+        rocket.y -= 7;
+        if(rocket.y <= rocket.tY) {
             rocket.active = false;
-            createExplosion(rocket.x, rocket.y);
-            revealContent(); 
+            for(let i=0; i<80; i++) parts.push({ x: rocket.x, y: rocket.y, angle: Math.random()*Math.PI*2, spd: Math.random()*5+2, a: 1 });
+            setTimeout(() => document.getElementById('intro-content').classList.add('visible-content'), 500);
         }
     }
-
-    particles.forEach((p, i) => {
-        p.x += Math.cos(p.angle) * p.speed;
-        p.y += Math.sin(p.angle) * p.speed;
-        p.alpha -= 0.012; p.speed *= 0.96;
-        ctx.fillStyle = `rgba(255, 215, 0, ${p.alpha})`;
-        ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx.fill();
-        if (p.alpha <= 0) particles.splice(i, 1);
+    parts.forEach((p, i) => {
+        p.x += Math.cos(p.angle)*p.spd; p.y += Math.sin(p.angle)*p.spd;
+        p.a -= 0.015; p.spd *= 0.96;
+        fX.fillStyle = `rgba(244, 196, 48, ${p.a})`;
+        fX.beginPath(); fX.arc(p.x, p.y, 2, 0, Math.PI*2); fX.fill();
+        if(p.a <= 0) parts.splice(i, 1);
     });
-    requestAnimationFrame(animate);
+    requestAnimationFrame(animateF);
 }
-
-function createExplosion(x, y) {
-    for (let i = 0; i < 80; i++) {
-        particles.push({
-            x: x, y: y, angle: Math.random() * Math.PI * 2,
-            speed: Math.random() * 5 + 2, alpha: 1, size: Math.random() * 3
-        });
-    }
-}
-
-function revealContent() {
-    const intro = document.getElementById('intro-content');
-    intro.classList.add('visible-content');
-}
-
-// FAILSAFE: Agar firework explode nahi hua, 3 sec baad text dikhao
-setTimeout(revealContent, 3000);
-animate();
+animateF();
 
 // --- NAVIGATION ---
 function goToScene(n) {
     document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
     document.getElementById(`scene-${n}`).classList.add('active');
-    if (n === 7) startLoading();
-    if (n === 9) startTypewriter();
+    if(n === 7) startLoading();
+    if(n === 9) startTypewriter();
+    if(n !== 4) player.pause();
 }
 
-// --- LOADING BAR ---
+// --- MUSIC PLAYER ---
+const player = document.getElementById('player');
+function toggleMusic(src, el) {
+    if(!player.paused && player.src.includes(src)) {
+        player.pause();
+        el.classList.remove('shaking');
+    } else {
+        document.querySelectorAll('.cassette-player').forEach(c => c.classList.remove('shaking'));
+        player.src = src;
+        player.play();
+        el.classList.add('shaking');
+        startWave(el);
+    }
+}
+
+function startWave(el) {
+    const cvs = el.querySelector('.wave-c');
+    const ctx = cvs.getContext('2d');
+    let off = 0;
+    function d() {
+        if(!el.classList.contains('shaking')) return;
+        ctx.clearRect(0,0,cvs.width,cvs.height);
+        ctx.strokeStyle = "#fff";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        for(let x=0; x<cvs.width; x++) ctx.lineTo(x, 15 + Math.sin(x*0.1 + off)*8);
+        ctx.stroke();
+        off += 0.15;
+        requestAnimationFrame(d);
+    }
+    d();
+}
+
+// --- LOADING ---
 function startLoading() {
-    let w = 0;
-    const bar = document.getElementById('progressBar');
-    const txt = document.getElementById('progressText');
+    let p = 0;
+    const bar = document.getElementById('loadBar');
+    const txt = document.getElementById('loadText');
     const inv = setInterval(() => {
-        if (w >= 100) { clearInterval(inv); setTimeout(() => goToScene(8), 500); }
-        else { w++; bar.style.width = w + '%'; txt.innerText = w + '%'; }
-    }, 35);
-}
-
-// --- MUSIC ---
-let audio = document.getElementById('bg-music');
-function playMusic(src, el) {
-    document.querySelectorAll('.cassette').forEach(c => c.classList.remove('playing'));
-    el.classList.add('playing');
-    audio.src = src; audio.play();
+        if(p>=100) { clearInterval(inv); setTimeout(() => goToScene(8), 500); }
+        else { p++; bar.style.width = p+'%'; txt.innerText = p+'%'; }
+    }, 40);
 }
 
 // --- TYPEWRITER ---
 function startTypewriter() {
-    const text = "Happy New Year! May 2026 be kind, exciting, and full of opportunities 🌟";
-    const el = document.getElementById('typewriter-text');
-    let i = 0; el.innerHTML = "";
-    function type() {
-        if (i < text.length) { el.innerHTML += text.charAt(i); i++; setTimeout(type, 50); }
-        else { document.getElementById('restartBtn').classList.add('show'); }
+    const text = "Happy New Year Anushka! May 2026 be kind, exciting, and full of opportunities 🌟";
+    const el = document.getElementById('finalTypewriter');
+    let i = 0;
+    function t() {
+        if(i < text.length) { el.innerHTML += text.charAt(i); i++; setTimeout(t, 60); }
+        else { document.getElementById('restartBtn').style.opacity = "1"; }
     }
-    type();
+    t();
 }
