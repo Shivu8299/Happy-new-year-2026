@@ -41,29 +41,28 @@ body { font-family: 'Quicksand', sans-serif; overflow: hidden; height: 100vh; wi
 .check-list { text-align: left; }
 .check-item { margin-bottom: 20px; display: flex; align-items: center; font-size: 0.95rem; color: #555; font-weight: 600; }
 .box { width: 22px; height: 22px; border: 2px solid #E63946; margin-right: 15px; border-radius: 4px; position: relative; }
-.go-btn { background: #E63946; color: white; border: none; padding: 15px 50px; border-radius: 50px; font-weight: 800; margin-top: 30px; width: 100%; }
 
-/* --- SCENE 4 & 5 FANCY BUTTONS --- */
-.fancy-btn-large { font-size: 1.3rem !important; padding: 18px 45px !important; background: linear-gradient(45deg, #e63946, #ff4d4d) !important; border: 2px solid white !important; box-shadow: 0 8px 20px rgba(0,0,0,0.3) !important; }
+/* --- FANCY BUTTONS --- */
+.fancy-btn-large { font-size: 1.3rem !important; padding: 18px 45px !important; background: linear-gradient(45deg, #e63946, #ff4d4d) !important; border: 2px solid white !important; box-shadow: 0 8px 20px rgba(0,0,0,0.3) !important; color: white !important;}
 
 /* --- SCENE 6 FERRERO FIX --- */
 .ferrero-card-small { background: white; padding: 10px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); margin-bottom: 20px; }
 .ferrero-card-small img { width: 160px; }
 .ready-title-fancy { font-family: 'Dancing Script'; font-size: 3.5rem; color: #333; }
 .chapter-text-large { font-size: 1.4rem; font-weight: 600; font-family: 'Dancing Script'; margin: 15px 0 30px; }
+.ignite-btn-aesthetic { border: 2px solid #f4c430; background: transparent; color: #f4c430; padding: 15px 40px; border-radius: 50px; font-weight: bold; cursor: pointer; }
 
 /* --- SCENE 7 LOADING FIX --- */
 .loading-bar-bg { width: 80%; height: 12px; background: #ddd; border-radius: 10px; margin: 20px 0; overflow: hidden; }
 .loading-bar-fill { width: 0%; height: 100%; background: #f4c430; transition: width 0.05s linear; }
 
-/* --- SCENE 8 CENTERING --- */
+/* --- SCENE 8 --- */
 .aesthetic-center { display: flex; justify-content: center; align-items: center; }
 .aesthetic-card { transform: rotate(0deg) !important; width: 90% !important; max-width: 350px; }
 .seal-btn-gold { background: #d4af37; color: white; border: none; padding: 15px; border-radius: 50px; width: 100%; font-weight: bold; font-size: 1.1rem; }
 
-/* --- SCENE 9 SHIELD DECORATED --- */
+/* --- SCENE 9 SHIELD --- */
 .decorated-shield { background: radial-gradient(circle, #fff9e7 0%, #ffe082 100%); }
 .shield-header-fancy { font-family: 'Cinzel'; font-size: 2.5rem; color: #b8860b; text-shadow: 2px 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
 .shield-font { font-family: 'Dancing Script' !important; font-size: 2.2rem !important; color: #333; font-weight: bold; text-align: center; }
 .restart-btn-aesthetic { background: #b8860b; color: white; border: none; padding: 15px 40px; border-radius: 50px; font-size: 1.2rem; margin-top: 30px; opacity: 0; pointer-events: none; transition: 1s; }
-.sparkles-bg { font-size: 3rem; margin-bottom: 10px; }
