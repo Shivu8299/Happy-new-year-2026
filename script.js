@@ -65,10 +65,8 @@ function goToScene(n) {
     document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
     document.getElementById(`scene-${n}`).classList.add('active');
     
-    // Stop all audio on scene change unless it's the music page
-    if (n !== 4) {
-        audio.pause();
-    }
+    // Stop audio unless on music page
+    if (n !== 4) { audio.pause(); }
 
     if(n === 7) startLoading();
     if(n === 9) startTypewriter();
@@ -132,7 +130,7 @@ function startLoading() {
 function startTypewriter() {
     const text = "Happy New Year Anushka! May 2026 be kind, exciting, and full of opportunities 🌟";
     const el = document.getElementById('type-text');
-    el.innerHTML = ""; // Clear existing
+    el.innerHTML = "";
     let i = 0;
     function type() {
         if(i < text.length) { 
