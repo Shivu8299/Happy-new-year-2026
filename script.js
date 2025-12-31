@@ -1,17 +1,13 @@
-// --- INITIAL CANVAS SETUP ---
+// --- CANVAS & FIREWORKS ---
 const sCanvas = document.getElementById('star-canvas');
 const fCanvas = document.getElementById('firework-canvas');
 const sCtx = sCanvas.getContext('2d');
 const fCtx = fCanvas.getContext('2d');
-
 sCanvas.width = fCanvas.width = window.innerWidth;
 sCanvas.height = fCanvas.height = window.innerHeight;
 
-// --- TWINKLING STARS ---
 let stars = [];
-for(let i=0; i<180; i++) {
-    stars.push({ x: Math.random()*sCanvas.width, y: Math.random()*sCanvas.height, r: Math.random()*1.5, alpha: Math.random() });
-}
+for(let i=0; i<180; i++) stars.push({ x: Math.random()*sCanvas.width, y: Math.random()*sCanvas.height, r: Math.random()*1.5, alpha: Math.random() });
 
 function drawStars() {
     sCtx.clearRect(0,0,sCanvas.width,sCanvas.height);
@@ -25,14 +21,11 @@ function drawStars() {
 }
 drawStars();
 
-// --- FIREWORK LOGIC ---
-let rocket = { x: fCanvas.width/2, y: fCanvas.height, tY: fCanvas.height/2.2, active: true, speed: 7 };
+let rocket = { x: fCanvas.width/2, y: fCanvas.height, tY: fCanvas.height/2.2, active: true, speed: 8 };
 let particles = [];
 
 function explode(x, y) {
-    for(let i=0; i<100; i++) {
-        particles.push({ x, y, angle: Math.random()*Math.PI*2, speed: Math.random()*5+2, a: 1 });
-    }
+    for(let i=0; i<100; i++) particles.push({ x, y, angle: Math.random()*Math.PI*2, speed: Math.random()*5+2, a: 1 });
 }
 
 function drawFirework() {
@@ -41,7 +34,7 @@ function drawFirework() {
         fCtx.fillStyle = "#f4c430";
         fCtx.beginPath(); fCtx.arc(rocket.x, rocket.y, 3, 0, Math.PI*2); fCtx.fill();
         rocket.y -= rocket.speed;
-        if(rocket.y <= rocket.tY) { rocket.active = false; explode(rocket.x, rocket.y); reveal(); }
+        if(rocket.y <= rocket.tY) { rocket.active = false; explode(rocket.x, rocket.y); revealIntro(); }
     }
     particles.forEach((p, i) => {
         p.x += Math.cos(p.angle)*p.speed; p.y += Math.sin(p.angle)*p.speed;
@@ -54,10 +47,8 @@ function drawFirework() {
 }
 drawFirework();
 
-function reveal() {
-    setTimeout(() => {
-        document.getElementById('intro-content').classList.add('visible-content');
-    }, 400);
+function revealIntro() {
+    setTimeout(() => document.getElementById('intro-content').classList.add('visible-content'), 400);
 }
 
 // --- NAVIGATION ---
@@ -66,27 +57,17 @@ function goToScene(n) {
     document.getElementById(`scene-${n}`).classList.add('active');
     if(n === 7) startLoading();
     if(n === 9) startTypewriter();
-    // Stop music if moving away from music page
-    if(n !== 4) { audio.pause(); }
+    if(n !== 4) audio.pause();
 }
 
-// --- MUSIC TOGGLE & WAVE ---
+// --- MUSIC LOGIC ---
 let audio = document.getElementById('global-audio');
-let waveInterval;
-
 function toggleMusic(src, el) {
     if(!audio.paused && audio.src.includes(src)) {
-        audio.pause();
-        el.classList.remove('playing');
-        stopWave(el);
+        audio.pause(); el.classList.remove('playing');
     } else {
-        document.querySelectorAll('.cassette-container').forEach(c => {
-            c.classList.remove('playing');
-            stopWave(c);
-        });
-        audio.src = src;
-        audio.play();
-        el.classList.add('playing');
+        document.querySelectorAll('.cassette-container').forEach(c => c.classList.remove('playing'));
+        audio.src = src; audio.play(); el.classList.add('playing');
         startWave(el);
     }
 }
@@ -104,33 +85,35 @@ function startWave(el) {
             let y = 12 + Math.sin(x*0.1 + offset)*5;
             ctxW.lineTo(x, y);
         }
-        ctxW.stroke();
-        offset += 0.2;
+        ctxW.stroke(); offset += 0.2;
         requestAnimationFrame(draw);
     }
     draw();
 }
-function stopWave(el) { /* Handled by draw check */ }
 
-// --- LOADING ---
+// --- LOADING LOGIC ---
 function startLoading() {
     let p = 0;
     const bar = document.querySelector('.loading-bar-fill');
     const txt = document.getElementById('perc');
     const inv = setInterval(() => {
-        if(p>=100) { clearInterval(inv); setTimeout(()=>goToScene(8), 500); }
+        if(p>=100) { clearInterval(inv); setTimeout(()=>goToScene(8), 800); }
         else { p++; bar.style.width = p+'%'; txt.innerText = p+'%'; }
-    }, 40);
+    }, 50);
 }
 
 // --- TYPEWRITER ---
 function startTypewriter() {
-    const text = "Happy New Year Anushka! May 2026 be kind, exciting, and full of opportunities 🌟";
+    const text = "Happy New Year Anushka! May 2026 be kind, exciting, and full of opportunities for you. You deserve the best! 🌟🛡️";
     const el = document.getElementById('type-text');
+    el.innerHTML = "";
     let i = 0;
     function type() {
-        if(i < text.length) { el.innerHTML += text.charAt(i); i++; setTimeout(type, 60); }
-        else { document.getElementById('restart').style.opacity = "1"; document.getElementById('restart').style.pointerEvents = "all"; }
+        if(i < text.length) { el.innerHTML += text.charAt(i); i++; setTimeout(type, 50); }
+        else { 
+            const rb = document.getElementById('restart');
+            rb.style.opacity = "1"; rb.style.pointerEvents = "all"; 
+        }
     }
     type();
-}
+    }
